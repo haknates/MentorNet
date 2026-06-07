@@ -4,16 +4,13 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
 object RetrofitClient {
-    // Ngrok kullanıyorsanız Ngrok linkini, Hotspot kullanıyorsanız senin IP'ni buraya yazın
-    // DİKKAT: Sonunda eğik çizgi (/) OLMASIN!
-    private const val BASE_URL = "http://127.0.0.1:4040.ngrok-free.app"
+    // Sanal cihazın (emülatörün) bilgisayarındaki Flask sunucusuna erişim kapısı:
+    private const val BASE_URL = "http://10.0.2.2:5000"
 
-    val apiService: ApiService by lazy {
-        Retrofit.Builder()
-            .baseUrl(BASE_URL)
-            .addConverterFactory(GsonConverterFactory.create())
-            .build()
-            .create(ApiService::class.java)
-    }
+    private val retrofit = Retrofit.Builder()
+        .baseUrl(BASE_URL)
+        .addConverterFactory(GsonConverterFactory.create())
+        .build()
+
+    val apiService: ApiService = retrofit.create(ApiService::class.java)
 }
-

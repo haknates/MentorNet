@@ -11,9 +11,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -30,6 +28,8 @@ import com.example.myapplication.ui.theme.EsenlerBlue
 import com.example.myapplication.ui.theme.EsenlerGray
 import com.example.myapplication.ui.theme.EsenlerGreen
 import com.example.myapplication.ui.theme.EsenlerOrange
+import com.google.ai.client.generativeai.GenerativeModel
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -37,7 +37,7 @@ fun AiResultScreen(navController: NavController, viewModel: MentorNetViewModel, 
     val mentors by viewModel.mentors.collectAsState()
     val friends by viewModel.friends.collectAsState()
     
-    val results = if (searchType == "Mentör") {
+    val results = if (searchType == "Mentör" || searchType == "Mentor") {
         mentors.filter { it.interests.any { interest -> interest.contains(sector, ignoreCase = true) } || sector == "" }
     } else {
         friends.filter { it.interests.any { interest -> interest.contains(sector, ignoreCase = true) } || sector == "" }
@@ -45,40 +45,15 @@ fun AiResultScreen(navController: NavController, viewModel: MentorNetViewModel, 
 
     Scaffold(
         topBar = {
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(90.dp)
-                    .clip(RoundedCornerShape(bottomStart = 32.dp, bottomEnd = 32.dp))
-                    .background(EsenlerBlue),
-                contentAlignment = Alignment.BottomCenter
-            ) {
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(start = 16.dp, end = 16.dp, bottom = 16.dp),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
+            TopAppBar(
+                title = { Text("AI Eşleşmeleri", color = Color.White) },
+                colors = TopAppBarDefaults.topAppBarColors(containerColor = EsenlerBlue),
+                navigationIcon = {
                     IconButton(onClick = { navController.popBackStack() }) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Geri", tint = Color.White)
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, "Geri", tint = Color.White)
                     }
-                    Text(
-                        "AI EŞLEŞMELERİ",
-                        modifier = Modifier.weight(1f),
-                        textAlign = androidx.compose.ui.text.style.TextAlign.Center,
-                        color = Color.White,
-                        fontWeight = FontWeight.ExtraBold,
-                        fontSize = 18.sp,
-                        letterSpacing = 1.sp
-                    )
-                    Spacer(modifier = Modifier.size(48.dp))
                 }
-            }
-        },
-        floatingActionButton = {
-            FloatingActionButton(onClick = { /* Add new */ }, containerColor = EsenlerBlue.copy(alpha = 0.7f), contentColor = Color.White) {
-                Icon(Icons.Default.Add, null)
-            }
+            )
         },
         bottomBar = {
             BottomNavigationBar(navController, viewModel)
@@ -90,7 +65,7 @@ fun AiResultScreen(navController: NavController, viewModel: MentorNetViewModel, 
                 .fillMaxSize()
                 .background(Color(0xFFF5F9FA))
         ) {
-            // AI Header Card (as in image)
+            // AI Header Card
             Card(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -110,7 +85,7 @@ fun AiResultScreen(navController: NavController, viewModel: MentorNetViewModel, 
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         Column(modifier = Modifier.weight(1f)) {
                             Text(
-                                "Yapay Zeka\nMentör Eşleştirme",
+                                "Yapay Zeka\n${if (searchType.startsWith("Ment")) "Mentör" else "Arkadaş"} Analizi",
                                 color = Color.White,
                                 fontSize = 22.sp,
                                 fontWeight = FontWeight.Bold,
@@ -118,20 +93,13 @@ fun AiResultScreen(navController: NavController, viewModel: MentorNetViewModel, 
                             )
                             Spacer(modifier = Modifier.height(8.dp))
                             Row(verticalAlignment = Alignment.CenterVertically) {
-                                Icon(Icons.Default.TrackChanges, null, tint = Color.White.copy(alpha = 0.8f), modifier = Modifier.size(16.dp))
+                                Icon(Icons.Default.AutoAwesome, null, tint = Color.White.copy(alpha = 0.8f), modifier = Modifier.size(16.dp))
                                 Spacer(modifier = Modifier.width(4.dp))
-                                Text("Hedef Analizi", color = Color.White.copy(alpha = 0.8f), fontSize = 14.sp)
+                                Text("Gemini 1.5 Flash Aktif", color = Color.White.copy(alpha = 0.8f), fontSize = 14.sp)
                             }
-                            Spacer(modifier = Modifier.height(12.dp))
-                            Text(
-                                "Hedeflerinize ve becerilerinize göre sizin için mükemmel mentörleri bulduk.",
-                                color = Color.White.copy(alpha = 0.9f),
-                                fontSize = 13.sp,
-                                lineHeight = 18.sp
-                            )
                         }
                         Icon(
-                            Icons.Default.Lightbulb,
+                            Icons.Default.Psychology,
                             contentDescription = null,
                             tint = Color.White.copy(alpha = 0.3f),
                             modifier = Modifier.size(80.dp)
@@ -144,18 +112,16 @@ fun AiResultScreen(navController: NavController, viewModel: MentorNetViewModel, 
                 modifier = Modifier.fillMaxSize(),
                 contentPadding = PaddingValues(bottom = 80.dp)
             ) {
-                items(results) { user ->
-                    AiMatchCard(user, searchType) {
-                        navController.navigate("user_detail/${user.id}/${user.userType.name}")
-                    }
-                }
-                
-                // If no results, show all as fallback
                 if (results.isEmpty()) {
-                    val fallbackList = if (searchType == "Mentör") mentors else friends
-                    items(fallbackList) { user ->
-                        AiMatchCard(user, searchType) {
-                            navController.navigate("user_detail/${user.id}/${user.userType.name}?isConnection=false")
+                    item {
+                        Box(modifier = Modifier.fillMaxWidth().padding(32.dp), contentAlignment = Alignment.Center) {
+                            Text("Uygun aday bulunamadı.", color = EsenlerGray)
+                        }
+                    }
+                } else {
+                    items(results) { user ->
+                        AiMatchCard(user, searchType, viewModel) {
+                            navController.navigate("user_detail/${user.id}/${user.userType.name}")
                         }
                     }
                 }
@@ -165,9 +131,43 @@ fun AiResultScreen(navController: NavController, viewModel: MentorNetViewModel, 
 }
 
 @Composable
-fun AiMatchCard(user: User, searchType: String, onClick: () -> Unit) {
-    val matchPercentage = (85..98).random()
+fun AiMatchCard(user: User, searchType: String, viewModel: MentorNetViewModel, onClick: () -> Unit) {
+    val currentUser by viewModel.currentUser.collectAsState()
+    val coroutineScope = rememberCoroutineScope()
+    var aiAnalysis by remember { mutableStateOf<String?>(null) }
+    var isAnalyzing by remember { mutableStateOf(false) }
     
+    // Gemini Model setup with your key
+    val generativeModel = remember {
+        GenerativeModel(
+            modelName = "gemini-3.5-flash",
+            apiKey = "AQ.Ab8RN6IGQFj6midQ3PSeiteYyPptFBZEWny2H73qh75GsGUKJA"
+        )
+    }
+
+    LaunchedEffect(user.id) {
+        isAnalyzing = true
+        coroutineScope.launch {
+            try {
+                val prompt = """
+                    Analiz et ve iki kullanıcı arasındaki uyumu açıkla.
+                    Kullanıcı 1 (Ben): ${currentUser.name}, Hedefler: ${currentUser.careerGoals}, İlgi: ${currentUser.interests.joinToString()}
+                    Kullanıcı 2 (${if (user.userType == UserType.MENTOR) "Mentör" else "Arkadaş"}): ${user.name}, Uzmanlık/İlgi: ${user.interests.joinToString()}, Biyografi: ${user.bio}
+                    
+                    Lütfen sadece 2 kısa cümle ile uyum oranını (%) ve nedenini yaz.
+                """.trimIndent()
+                
+                val response = generativeModel.generateContent(prompt)
+                aiAnalysis = response.text ?: "Analiz yapılamadı."
+            } catch (e: Exception) {
+                aiAnalysis = "Bağlantı sorunu: ${e.localizedMessage}"
+                android.util.Log.e("AiMatchCard", "Gemini Hatası", e)
+            } finally {
+                isAnalyzing = false
+            }
+        }
+    }
+
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -177,81 +177,65 @@ fun AiMatchCard(user: User, searchType: String, onClick: () -> Unit) {
         colors = CardDefaults.cardColors(containerColor = Color.White),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
     ) {
-        Row(
-            modifier = Modifier.padding(16.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            // Profile Image Placeholder
-            Box(
-                modifier = Modifier
-                    .size(60.dp)
-                    .clip(CircleShape)
-                    .background(EsenlerBlue.copy(alpha = 0.1f)),
-                contentAlignment = Alignment.Center
-            ) {
-                Icon(Icons.Default.Person, null, tint = EsenlerBlue, modifier = Modifier.size(32.dp))
+        Column(modifier = Modifier.padding(16.dp)) {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Box(
+                    modifier = Modifier
+                        .size(50.dp)
+                        .clip(CircleShape)
+                        .background(EsenlerBlue.copy(alpha = 0.1f)),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Icon(Icons.Default.Person, null, tint = EsenlerBlue)
+                }
+
+                Spacer(modifier = Modifier.width(12.dp))
+
+                Column(modifier = Modifier.weight(1f)) {
+                    Text("${user.name} ${user.surname}", fontWeight = FontWeight.Bold, color = EsenlerGray)
+                    Text(
+                        if (user.userType == UserType.MENTOR) "Mentör" else "Öğrenci",
+                        fontSize = 12.sp,
+                        color = EsenlerGray.copy(alpha = 0.6f)
+                    )
+                }
+                
+                Icon(Icons.Default.ChevronRight, null, tint = Color.LightGray)
             }
 
-            Spacer(modifier = Modifier.width(16.dp))
-
-            Column(modifier = Modifier.weight(1f)) {
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Text(
-                        "${user.name} ${user.surname}",
-                        fontWeight = FontWeight.Bold,
-                        fontSize = 16.sp,
-                        color = EsenlerGray
-                    )
-                    Spacer(modifier = Modifier.width(8.dp))
-                    Surface(
-                        color = EsenlerGreen.copy(alpha = 0.1f),
-                        shape = RoundedCornerShape(12.dp)
-                    ) {
+            Spacer(modifier = Modifier.height(12.dp))
+            
+            // AI Analysis Section
+            Surface(
+                color = Color(0xFFF8F9FF),
+                shape = RoundedCornerShape(12.dp),
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Column(modifier = Modifier.padding(12.dp)) {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Icon(Icons.Default.AutoAwesome, null, tint = EsenlerOrange, modifier = Modifier.size(14.dp))
+                        Spacer(modifier = Modifier.width(6.dp))
+                        Text("Yapay Zeka Analizi", fontSize = 12.sp, fontWeight = FontWeight.Bold, color = EsenlerBlue)
+                    }
+                    
+                    Spacer(modifier = Modifier.height(4.dp))
+                    
+                    if (isAnalyzing) {
+                        LinearProgressIndicator(
+                            modifier = Modifier.fillMaxWidth().height(2.dp),
+                            color = EsenlerOrange,
+                            trackColor = EsenlerOrange.copy(alpha = 0.1f)
+                        )
+                    } else {
                         Text(
-                            "Eşleşme: %$matchPercentage",
-                            modifier = Modifier.padding(horizontal = 8.dp, vertical = 2.dp),
-                            fontSize = 10.sp,
-                            color = EsenlerGreen,
-                            fontWeight = FontWeight.Bold
+                            text = aiAnalysis ?: "Analiz hazırlanıyor...",
+                            fontSize = 12.sp,
+                            color = Color.DarkGray,
+                            lineHeight = 16.sp
                         )
                     }
                 }
-                
-                Text(
-                    if (user.userType == UserType.MENTOR) "(${user.interests.firstOrNull() ?: "Uzman"})" else "(Öğrenci)",
-                    fontSize = 14.sp,
-                    color = EsenlerGray.copy(alpha = 0.7f)
-                )
-
-                Spacer(modifier = Modifier.height(4.dp))
-
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Icon(Icons.Default.Work, null, tint = EsenlerGray.copy(alpha = 0.5f), modifier = Modifier.size(14.dp))
-                    Spacer(modifier = Modifier.width(4.dp))
-                    Text(
-                        if (user.userType == UserType.MENTOR) user.bio.split("-").firstOrNull()?.trim() ?: "10+ Yıl Tecrübe" else "Öğrenci",
-                        fontSize = 12.sp,
-                        color = EsenlerGray.copy(alpha = 0.6f)
-                    )
-                }
-
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Icon(Icons.Default.Hub, null, tint = EsenlerGray.copy(alpha = 0.5f), modifier = Modifier.size(14.dp))
-                    Spacer(modifier = Modifier.width(4.dp))
-                    Text(
-                        user.interests.take(3).joinToString(", "),
-                        fontSize = 12.sp,
-                        color = EsenlerGray.copy(alpha = 0.6f)
-                    )
-                }
             }
-
-            Icon(
-                if (user.userType == UserType.MENTOR) Icons.Default.Lightbulb else Icons.Default.Computer,
-                contentDescription = null,
-                tint = EsenlerOrange,
-                modifier = Modifier.size(24.dp)
-            )
         }
     }
 }

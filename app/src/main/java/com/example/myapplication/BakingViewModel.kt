@@ -4,8 +4,8 @@ import android.graphics.Bitmap
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.firebase.Firebase
-import com.google.firebase.ai.ai
-import com.google.firebase.ai.type.content
+import com.google.firebase.vertexai.vertexAI
+import com.google.firebase.vertexai.type.content
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -18,8 +18,8 @@ class BakingViewModel : ViewModel() {
     val uiState: StateFlow<UiState> =
         _uiState.asStateFlow()
 
-    private val generativeModel = Firebase.ai.generativeModel(
-        modelName = "gemini-flash-latest",
+    private val generativeModel = Firebase.vertexAI.generativeModel(
+        modelName = "gemini-3.5-flash",
     )
 
     fun sendPrompt(bitmap: Bitmap, prompt: String) {

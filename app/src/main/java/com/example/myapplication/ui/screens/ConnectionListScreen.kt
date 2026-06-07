@@ -36,35 +36,15 @@ fun ConnectionListScreen(navController: NavController, title: String, viewModel:
 
     Scaffold(
         topBar = {
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(90.dp)
-                    .clip(RoundedCornerShape(bottomStart = 32.dp, bottomEnd = 32.dp))
-                    .background(EsenlerBlue),
-                contentAlignment = Alignment.BottomCenter
-            ) {
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(start = 16.dp, end = 16.dp, bottom = 16.dp),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
+            TopAppBar(
+                title = { Text(title, color = Color.White, fontWeight = FontWeight.Bold) },
+                colors = TopAppBarDefaults.topAppBarColors(containerColor = EsenlerBlue),
+                navigationIcon = {
                     IconButton(onClick = { navController.popBackStack() }) {
                         Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Geri", tint = Color.White)
                     }
-                    Text(
-                        title.uppercase(),
-                        modifier = Modifier.weight(1f),
-                        textAlign = androidx.compose.ui.text.style.TextAlign.Center,
-                        color = Color.White,
-                        fontWeight = FontWeight.ExtraBold,
-                        fontSize = 18.sp,
-                        letterSpacing = 1.sp
-                    )
-                    Spacer(modifier = Modifier.size(48.dp))
                 }
-            }
+            )
         },
         bottomBar = {
             BottomNavigationBar(navController, viewModel)
@@ -78,7 +58,11 @@ fun ConnectionListScreen(navController: NavController, title: String, viewModel:
             contentPadding = PaddingValues(vertical = 12.dp)
         ) {
             items(connections) { user ->
-                AiMatchCard(user = user, searchType = if (title == "Mentörüm") "Mentör" else "Arkadaş") {
+                AiMatchCard(
+                    user = user, 
+                    searchType = if (title == "Mentörüm") "Mentör" else "Arkadaş",
+                    viewModel = viewModel
+                ) {
                     navController.navigate("user_detail/${user.id}/${user.userType.name}?isConnection=true")
                 }
             }
