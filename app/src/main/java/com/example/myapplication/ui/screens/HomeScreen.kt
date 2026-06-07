@@ -30,13 +30,6 @@ import com.example.myapplication.ui.theme.EsenlerBlue
 import com.example.myapplication.ui.theme.EsenlerGray
 import com.example.myapplication.ui.theme.EsenlerOrange
 
-// YAPAY ZEKA İÇİN GEREKLİ EKLENTİLER BURAYA (EN ÜSTE) ALINDI
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
-import com.google.ai.client.generativeai.GenerativeModel
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(navController: NavController, viewModel: MentorNetViewModel) {

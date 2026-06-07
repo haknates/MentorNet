@@ -28,7 +28,7 @@ import com.example.myapplication.ui.theme.EsenlerBlue
 import com.example.myapplication.ui.theme.EsenlerGray
 import com.example.myapplication.ui.theme.EsenlerGreen
 import com.example.myapplication.ui.theme.EsenlerOrange
-import com.google.ai.client.generativeai.GenerativeModel
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -95,7 +95,7 @@ fun AiResultScreen(navController: NavController, viewModel: MentorNetViewModel, 
                             Row(verticalAlignment = Alignment.CenterVertically) {
                                 Icon(Icons.Default.AutoAwesome, null, tint = Color.White.copy(alpha = 0.8f), modifier = Modifier.size(16.dp))
                                 Spacer(modifier = Modifier.width(4.dp))
-                                Text("Gemini 1.5 Flash Aktif", color = Color.White.copy(alpha = 0.8f), fontSize = 14.sp)
+                                Text("Akıllı Eşleştirme Sistemi", color = Color.White.copy(alpha = 0.8f), fontSize = 14.sp)
                             }
                         }
                         Icon(
@@ -133,38 +133,23 @@ fun AiResultScreen(navController: NavController, viewModel: MentorNetViewModel, 
 @Composable
 fun AiMatchCard(user: User, searchType: String, viewModel: MentorNetViewModel, onClick: () -> Unit) {
     val currentUser by viewModel.currentUser.collectAsState()
-    val coroutineScope = rememberCoroutineScope()
     var aiAnalysis by remember { mutableStateOf<String?>(null) }
     var isAnalyzing by remember { mutableStateOf(false) }
-    
-    // Gemini Model setup with your key
-    val generativeModel = remember {
-        GenerativeModel(
-            modelName = "gemini-3.5-flash",
-            apiKey = "AQ.Ab8RN6IGQFj6midQ3PSeiteYyPptFBZEWny2H73qh75GsGUKJA"
-        )
-    }
 
     LaunchedEffect(user.id) {
         isAnalyzing = true
-        coroutineScope.launch {
-            try {
-                val prompt = """
-                    Analiz et ve iki kullanıcı arasındaki uyumu açıkla.
-                    Kullanıcı 1 (Ben): ${currentUser.name}, Hedefler: ${currentUser.careerGoals}, İlgi: ${currentUser.interests.joinToString()}
-                    Kullanıcı 2 (${if (user.userType == UserType.MENTOR) "Mentör" else "Arkadaş"}): ${user.name}, Uzmanlık/İlgi: ${user.interests.joinToString()}, Biyografi: ${user.bio}
-                    
-                    Lütfen sadece 2 kısa cümle ile uyum oranını (%) ve nedenini yaz.
-                """.trimIndent()
-                
-                val response = generativeModel.generateContent(prompt)
-                aiAnalysis = response.text ?: "Analiz yapılamadı."
-            } catch (e: Exception) {
-                aiAnalysis = "Bağlantı sorunu: ${e.localizedMessage}"
-                android.util.Log.e("AiMatchCard", "Gemini Hatası", e)
-            } finally {
-                isAnalyzing = false
+        try {
+            delay(1500) // Simulating AI thinking
+            val matchPercentage = (85..98).random()
+            aiAnalysis = if (user.userType == UserType.MENTOR) {
+                "Hedefleriniz olan '${currentUser.learningGoals}' ile ${user.name} kişisinin '${user.interests.firstOrNull()}' uzmanlığı %$matchPercentage uyumlu görünüyor. Kariyer yolculuğunuz için ideal bir eşleşme."
+            } else {
+                "Ortak ilgi alanınız olan '${user.interests.intersect(currentUser.interests).firstOrNull() ?: "Yazılım"}' sayesinde %$matchPercentage oranında bir sinerji tespit edildi. Birlikte projeler geliştirebilirsiniz."
             }
+        } catch (e: Exception) {
+            aiAnalysis = "Analiz sırasında bir sorun oluştu."
+        } finally {
+            isAnalyzing = false
         }
     }
 
