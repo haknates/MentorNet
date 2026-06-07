@@ -39,7 +39,7 @@ Projeyi yerel bilgisayarınızda çalıştırmak için şu adımları izleyin:
 
 Uygulamayı doğrudan Android cihazınıza indirip denemek için aşağıdaki bağlantıyı kullanabilirsiniz:
 
-> [**MentorNET v1.0 - Google Drive İndirme Linki**](BURAYA_DRIVE_LINKINI_YAPISTIR)
+> [**MentorNET v1.0 - Google Drive İndirme Linki**](https://drive.google.com/file/d/1_JF1KKEo8raCgowyW_QHDxAf16tlLYz1/view?usp=sharing)
 
 ---
 *Bu proje Esenler Belediyesi Gençlik Platformu vizyonuyla geliştirilmiştir.*
