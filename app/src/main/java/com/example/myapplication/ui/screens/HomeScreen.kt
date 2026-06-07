@@ -1,5 +1,6 @@
 package com.example.myapplication.ui.screens
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -18,12 +19,14 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.compose.currentBackStackEntryAsState
+import com.example.myapplication.R
 import com.example.myapplication.ui.MentorNetViewModel
 import com.example.myapplication.ui.getAppStrings
 import com.example.myapplication.ui.theme.EsenlerBlue
@@ -47,7 +50,7 @@ fun HomeScreen(navController: NavController, viewModel: MentorNetViewModel) {
                 .background(MaterialTheme.colorScheme.background)
                 .verticalScroll(rememberScrollState())
         ) {
-            // Small Rounded Top Bar
+            // Reverted to previous compact top bar style
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -57,7 +60,9 @@ fun HomeScreen(navController: NavController, viewModel: MentorNetViewModel) {
                 contentAlignment = Alignment.Center
             ) {
                 Row(
-                    modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp),
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
@@ -85,38 +90,61 @@ fun HomeScreen(navController: NavController, viewModel: MentorNetViewModel) {
 
             Spacer(modifier = Modifier.height(24.dp))
 
-            // Headline Section
+            // Modern Headline Section
             Column(
-                modifier = Modifier.fillMaxWidth().padding(horizontal = 32.dp),
-                horizontalAlignment = Alignment.CenterHorizontally
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 24.dp)
             ) {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Surface(
+                        modifier = Modifier.size(64.dp),
+                        shape = RoundedCornerShape(16.dp),
+                        color = Color.White,
+                        shadowElevation = 4.dp
+                    ) {
+                        Image(
+                            painter = painterResource(id = R.drawable.app_logo),
+                            contentDescription = null,
+                            modifier = Modifier.padding(8.dp)
+                        )
+                    }
+                    Spacer(modifier = Modifier.width(16.dp))
+                    Text(
+                        text = strings.platformTitle,
+                        style = MaterialTheme.typography.titleLarge,
+                        color = MaterialTheme.colorScheme.onBackground,
+                        fontWeight = FontWeight.ExtraBold,
+                        textAlign = TextAlign.Start,
+                        lineHeight = 24.sp,
+                        modifier = Modifier.weight(1f)
+                    )
+                }
+                
+                Spacer(modifier = Modifier.height(16.dp))
+                
                 Text(
-                    text = if (strings.language == "App Language") "Esenler Municipality Youth Network Platform" else "Esenler Belediyesi Gençlik Network Platformu",
-                    style = MaterialTheme.typography.headlineSmall,
-                    color = MaterialTheme.colorScheme.onBackground,
-                    fontWeight = FontWeight.ExtraBold,
-                    textAlign = TextAlign.Center,
-                    lineHeight = 28.sp
-                )
-                Spacer(modifier = Modifier.height(12.dp))
-                Text(
-                    text = if (strings.language == "App Language") "A digital platform where youth in Esenler safely find mentors, get project partners, and grow their networks." else "Esenler'deki gençlerin güvenle mentor bulduğu, proje ortağı edindiği ve networkünü büyüttüğü dijital platform.",
+                    text = strings.platformDescription,
                     style = MaterialTheme.typography.bodyMedium,
                     color = Color.Gray,
-                    textAlign = TextAlign.Center,
-                    lineHeight = 20.sp
+                    textAlign = TextAlign.Start,
+                    lineHeight = 20.sp,
+                    modifier = Modifier.padding(start = 4.dp)
                 )
             }
 
-            Spacer(modifier = Modifier.height(32.dp))
+            Spacer(modifier = Modifier.height(28.dp))
 
             // Gradient Action Button
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = 40.dp)
-                    .height(56.dp)
-                    .clip(CircleShape)
+                    .padding(horizontal = 24.dp)
+                    .height(58.dp)
+                    .clip(RoundedCornerShape(16.dp))
                     .background(
                         Brush.linearGradient(
                             colors = listOf(EsenlerOrange, Color(0xFFFFB74D))
@@ -130,14 +158,19 @@ fun HomeScreen(navController: NavController, viewModel: MentorNetViewModel) {
                         strings.findMentor,
                         color = Color.White,
                         fontWeight = FontWeight.Bold,
-                        fontSize = 14.sp
+                        fontSize = 15.sp
                     )
-                    Spacer(modifier = Modifier.width(8.dp))
-                    Icon(Icons.Default.AutoAwesome, contentDescription = null, tint = Color.White, modifier = Modifier.size(18.dp))
+                    Spacer(modifier = Modifier.width(12.dp))
+                    Icon(
+                        Icons.Default.AutoAwesome, 
+                        contentDescription = null, 
+                        tint = Color.White, 
+                        modifier = Modifier.size(20.dp)
+                    )
                 }
             }
 
-            Spacer(modifier = Modifier.height(32.dp))
+            Spacer(modifier = Modifier.height(28.dp))
 
             // Grid of Features
             val features = listOf(
@@ -149,7 +182,7 @@ fun HomeScreen(navController: NavController, viewModel: MentorNetViewModel) {
                 FeatureItem(strings.events, Icons.Default.Event, "events")
             )
 
-            Column(modifier = Modifier.padding(horizontal = 20.dp)) {
+            Column(modifier = Modifier.padding(horizontal = 16.dp)) {
                 features.chunked(2).forEach { rowItems ->
                     Row(modifier = Modifier.fillMaxWidth()) {
                         rowItems.forEach { item ->

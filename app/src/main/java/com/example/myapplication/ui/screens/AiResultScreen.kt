@@ -45,15 +45,35 @@ fun AiResultScreen(navController: NavController, viewModel: MentorNetViewModel, 
 
     Scaffold(
         topBar = {
-            TopAppBar(
-                title = { Text("AI Eşleşmeleri", color = Color.White) },
-                colors = TopAppBarDefaults.topAppBarColors(containerColor = EsenlerBlue),
-                navigationIcon = {
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(90.dp)
+                    .clip(RoundedCornerShape(bottomStart = 32.dp, bottomEnd = 32.dp))
+                    .background(EsenlerBlue),
+                contentAlignment = Alignment.BottomCenter
+            ) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(start = 16.dp, end = 16.dp, bottom = 16.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
                     IconButton(onClick = { navController.popBackStack() }) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, "Geri", tint = Color.White)
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Geri", tint = Color.White)
                     }
+                    Text(
+                        "AI EŞLEŞMELERİ",
+                        modifier = Modifier.weight(1f),
+                        textAlign = androidx.compose.ui.text.style.TextAlign.Center,
+                        color = Color.White,
+                        fontWeight = FontWeight.ExtraBold,
+                        fontSize = 18.sp,
+                        letterSpacing = 1.sp
+                    )
+                    Spacer(modifier = Modifier.size(48.dp))
                 }
-            )
+            }
         },
         floatingActionButton = {
             FloatingActionButton(onClick = { /* Add new */ }, containerColor = EsenlerBlue.copy(alpha = 0.7f), contentColor = Color.White) {

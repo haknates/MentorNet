@@ -12,6 +12,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -55,17 +56,37 @@ fun AiMatchingScreen(navController: NavController, viewModel: MentorNetViewModel
 
     Scaffold(
         topBar = {
-            TopAppBar(
-                title = { Text(strings.aiMatching, color = Color.White, fontWeight = FontWeight.Bold) },
-                colors = TopAppBarDefaults.topAppBarColors(containerColor = EsenlerBlue),
-                navigationIcon = {
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(90.dp)
+                    .clip(RoundedCornerShape(bottomStart = 32.dp, bottomEnd = 32.dp))
+                    .background(EsenlerBlue),
+                contentAlignment = Alignment.BottomCenter
+            ) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(start = 16.dp, end = 16.dp, bottom = 16.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
                     IconButton(onClick = { 
                         if (step > 1) step-- else navController.popBackStack() 
                     }) {
                         Icon(Icons.AutoMirrored.Filled.ArrowBack, strings.back, tint = Color.White)
                     }
+                    Text(
+                        strings.aiMatching.uppercase(),
+                        modifier = Modifier.weight(1f),
+                        textAlign = TextAlign.Center,
+                        color = Color.White,
+                        fontWeight = FontWeight.ExtraBold,
+                        fontSize = 18.sp,
+                        letterSpacing = 1.sp
+                    )
+                    Spacer(modifier = Modifier.size(48.dp))
                 }
-            )
+            }
         }
     ) { padding ->
         Box(

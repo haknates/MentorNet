@@ -44,7 +44,9 @@ data class AppStrings(
     val externalAccounts: String,
     val analyzeInterests: String,
     val findingMentor: String,
-    val aiMatching: String
+    val aiMatching: String,
+    val platformTitle: String,
+    val platformDescription: String
 )
 
 val trStrings = AppStrings(
@@ -87,7 +89,9 @@ val trStrings = AppStrings(
     externalAccounts = "Harici Hesap Entegrasyonu",
     analyzeInterests = "AI ile kişisel ilgileriniz analiz ediliyor...",
     findingMentor = "Sizin için uygun mentör bulunuyor.",
-    aiMatching = "AI Eşleştirme"
+    aiMatching = "AI Eşleştirme",
+    platformTitle = "Esenler Belediyesi\nGençlik Network Platformu",
+    platformDescription = "Esenler'deki gençlerin güvenle mentor bulduğu, proje ortağı edindiği ve networkünü büyüttüğü dijital platform."
 )
 
 val enStrings = AppStrings(
@@ -130,7 +134,9 @@ val enStrings = AppStrings(
     externalAccounts = "External Account Integration",
     analyzeInterests = "Analyzing your personal interests with AI...",
     findingMentor = "Finding a suitable mentor for you.",
-    aiMatching = "AI Matching"
+    aiMatching = "AI Matching",
+    platformTitle = "Esenler Municipality\nYouth Network Platform",
+    platformDescription = "A digital platform where youth in Esenler safely find mentors, get project partners, and grow their networks."
 )
 
 @Composable
