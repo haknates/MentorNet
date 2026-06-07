@@ -14,12 +14,14 @@ fun MainNavigation(viewModel: MentorNetViewModel = viewModel()) {
     val navController = rememberNavController()
     NavHost(
         navController = navController, 
-        startDestination = "home",
+        startDestination = "launcher",
         enterTransition = { slideInHorizontally(animationSpec = tween(500), initialOffsetX = { it }) + fadeIn() },
         exitTransition = { slideOutHorizontally(animationSpec = tween(500), targetOffsetX = { -it }) + fadeOut() },
         popEnterTransition = { slideInHorizontally(animationSpec = tween(500), initialOffsetX = { -it }) + fadeIn() },
         popExitTransition = { slideOutHorizontally(animationSpec = tween(500), targetOffsetX = { it }) + fadeOut() }
     ) {
+        composable("launcher") { EsenlinkLauncherScreen(navController) }
+        composable("splash") { SplashScreen(navController) }
         composable("home") { HomeScreen(navController, viewModel) }
         composable("settings") { SettingsScreen(navController, viewModel) }
         composable("app_settings") { AppSettingsScreen(navController, viewModel) }

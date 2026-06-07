@@ -34,7 +34,7 @@ import com.example.myapplication.ui.theme.EsenlerOrange
 @Composable
 fun HomeScreen(navController: NavController, viewModel: MentorNetViewModel) {
     val strings = getAppStrings(viewModel)
-    
+
     Scaffold(
         bottomBar = {
             BottomNavigationBar(navController, viewModel)
@@ -61,7 +61,14 @@ fun HomeScreen(navController: NavController, viewModel: MentorNetViewModel) {
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Spacer(modifier = Modifier.size(24.dp))
+                    IconButton(onClick = { 
+                        navController.navigate("launcher") {
+                            popUpTo("home") { inclusive = true }
+                        }
+                    }) {
+                        Icon(Icons.Default.ExitToApp, contentDescription = "Exit", tint = Color.White)
+                    }
+                    
                     Text(
                         strings.appName,
                         color = Color.White,
@@ -69,6 +76,7 @@ fun HomeScreen(navController: NavController, viewModel: MentorNetViewModel) {
                         fontSize = 18.sp,
                         letterSpacing = 1.2.sp
                     )
+
                     IconButton(onClick = { navController.navigate("app_settings") }) {
                         Icon(Icons.Default.Settings, contentDescription = strings.settings, tint = Color.White)
                     }
@@ -154,7 +162,7 @@ fun HomeScreen(navController: NavController, viewModel: MentorNetViewModel) {
                     }
                 }
             }
-            
+
             Spacer(modifier = Modifier.height(24.dp))
         }
     }
